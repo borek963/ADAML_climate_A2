@@ -14,7 +14,8 @@ class RnnModel:
                  unit_type,
                  target_column='humidity',
                  seq_len=20,
-                 split_ratio=0.8):
+                 split_ratio=0.8,
+                 lag=1):
 
         self.unit_type = unit_type
         self.data = data_frame.values
@@ -29,9 +30,9 @@ class RnnModel:
         # Prepare sequences for input (X) and output (Y)
         X, Y = [], []
 
-        for i in range(len(self.data_normalized) - self.seq_len):
+        for i in range(len(self.data_normalized) - self.seq_len - lag):
             x_sequence = self.data_normalized[i:i + self.seq_len]
-            y_sequence = self.data_normalized[i + self.seq_len]
+            y_sequence = self.data_normalized[i + self.seq_len + lag]
             X.append(x_sequence)
             Y.append(y_sequence)
 
@@ -43,8 +44,14 @@ class RnnModel:
         self.split_ratio = split_ratio
         self.split_index = int(split_ratio * len(self.X))
 
-        self.X_train, self.X_test = X[:self.split_index], X[self.split_index:]
-        self.Y_train, self.Y_test = Y[:self.split_index], Y[self.split_index:]
+        # self.X_train, self.X_test = X[:self.split_index], X[self.split_index:]
+        # self.Y_train, self.Y_test = Y[:self.split_index], Y[self.split_index:]
+        
+        # Split the data into training and validation sets (2 years training, 1 validation)
+        n = 365
+
+        self.X_train, self.X_test = X[:2*n], X[2*n + 1:3*n]
+        self.Y_train, self.Y_test = Y[:2*n], Y[2*n + 1:3*n]
 
         # Create the LSTM model
         if self.unit_type == "base":
