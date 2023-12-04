@@ -55,10 +55,12 @@ class RnnModel:
         # Split the data into training and testing sets (2/3 years training, 1 validation)
         self.n = 365
 
-        # self.X_train, self.X_test = X[:3*self.n], X[3*self.n + 1:4*self.n]
-        # self.Y_train, self.Y_test = Y[:3*self.n], Y[3*self.n + 1:4*self.n]
-        self.X_train, self.X_test = X[self.n:3*self.n], X[3*self.n + 1:4*self.n]
-        self.Y_train, self.Y_test = Y[self.n:3*self.n], Y[3*self.n + 1:4*self.n]
+        # 2 years training
+        # self.X_train, self.X_test = X[self.n:3*self.n], X[3*self.n + 1:4*self.n]
+        # self.Y_train, self.Y_test = Y[self.n:3*self.n], Y[3*self.n + 1:4*self.n]
+        # 3 years training
+        self.X_train, self.X_test = X[:3*self.n], X[3*self.n + 1:4*self.n]
+        self.Y_train, self.Y_test = Y[:3*self.n], Y[3*self.n + 1:4*self.n]
 
         # Create the LSTM model
         if self.unit_type == "base":
