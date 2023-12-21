@@ -18,7 +18,8 @@ class RnnModel:
                  split_ratio=0.8,
                  lag=1,
                  n_units=80,
-                 lr=0.001):
+                 lr=0.001,
+                 stacked_count=1):
 
         self.unit_type = unit_type
         self.data = data_frame.values
@@ -31,6 +32,7 @@ class RnnModel:
         self.seq_len = seq_len
         self.lag = lag
         self.n_units = n_units
+        self.stacked_count = stacked_count
 
         # Prepare sequences for input (X) and output (Y)
         X, Y = [], []
@@ -66,6 +68,8 @@ class RnnModel:
 
         elif self.unit_type == "lstm":
             self.model = Sequential()
+            for _ in range(self.stacked_count):
+                self.model.add(LSTM(units=self.n_units, input_shape=(self.seq_len, 4)), return_sequences=True)
             self.model.add(LSTM(units=self.n_units, input_shape=(self.seq_len, 4)))
             self.model.add(Dense(units=4))
 
