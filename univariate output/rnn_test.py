@@ -59,15 +59,17 @@ class RnnModel:
             self.X_train, self.X_test = X[:split_index2], X[split_index2:]
             self.Y_train, self.Y_test = Y[:split_index2], Y[split_index2:]
 
-        # Create the LSTM model
+        # Create the RNN model
         if self.unit_type == "base":
             self.model = Sequential()
             self.model.add(SimpleRNN(units=self.n_units, input_shape=(self.seq_len, 4)))
+            self.model.add(Dense(units=4, activation="tanh"))
             self.model.add(Dense(units=1))
-
+        # Create the LSTM model
         elif self.unit_type == "lstm":
             self.model = Sequential()
             self.model.add(LSTM(units=self.n_units, input_shape=(self.seq_len, 4)))
+            self.model.add(Dense(units=4, activation="tanh"))
             self.model.add(Dense(units=1))
 
         else:
@@ -93,8 +95,6 @@ class RnnModel:
         validation_predictions = []
 
         last_x = self.X_test[0]
-        # Adding the first seq_len days to the prediction list that will have the predictions
-        validation_predictions = list(last_x[:,1])
         count = 1
         while len(validation_predictions) < len(validation_target):
             p = self.model.predict(np.expand_dims(np.array(last_x), 0))
@@ -102,7 +102,10 @@ class RnnModel:
             validation_predictions.append(p)
             # Roll to predict new day in next iteration
             last_x = np.roll(last_x, -1, axis=0)
-            next_x = self.X_test[count]
+            try:
+              next_x = self.X_test[count]
+            except:
+              break
             
             # actual values of other variables + predicted value
             new_values = next_x[-1,:]
