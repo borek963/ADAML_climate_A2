@@ -7,7 +7,7 @@ from tensorflow.keras.layers import LSTM, Dense, SimpleRNN
 from tensorflow.keras.optimizers import Adam
 from sklearn.metrics import mean_squared_error, r2_score
 import matplotlib.pyplot as plt
-
+import time
 
 class RnnModel:
     def __init__(self,
@@ -86,9 +86,12 @@ class RnnModel:
         self.r2 = np.inf
 
     def train(self, epochs=100, batch_size=20, num_channels=4):
+        start = time.time()
         self.model.fit(np.array(self.X_train),
                        np.array(self.Y_train),
                        epochs=epochs, batch_size=batch_size)
+        end = time.time()
+        print("Training time: " + str(end - start))
 
         # Inference using predicted values as input for the next prediction
         validation_target = self.Y_test
